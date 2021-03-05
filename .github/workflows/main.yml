@@ -8,13 +8,13 @@ on:
 jobs:
   tagged-release:
     name: "Tagged Release"
-    runs-on: "windows-latest"
+    runs-on: "ubuntu-latest"
 
     steps:
       - name: "Build"
         run: |
-          make
-        shell: powershell
+          ./make.ps1
+        shell: pwsh
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
