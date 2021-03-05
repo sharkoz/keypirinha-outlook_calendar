@@ -12,7 +12,9 @@ jobs:
 
     steps:
       - name: "Build"
-        run: .\make.ps1
+        run: |
+          ls
+          .\make.ps1
         shell: powershell
 
       - uses: "marvinpinto/action-automatic-releases@latest"
