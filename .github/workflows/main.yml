@@ -1,0 +1,25 @@
+name: "tagged-release"
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  tagged-release:
+    name: "Tagged Release"
+    runs-on: "windows-latest"
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Build"
+        run: .\make.ps1
+        shell: pwsh
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: false
+          files: |
+            build/*
