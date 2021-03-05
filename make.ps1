@@ -11,8 +11,8 @@ New-Item -Path .\build -ItemType Directory
 $compress = @{
     Path = ".\src\*.*", ".\LICENSE", ".\README.md"
     CompressionLevel = "Optimal"
-    DestinationPath = ".\build\Snippets.zip"
+    DestinationPath = ".\build\outlook_calendar.zip"
 }
 
 Compress-Archive @compress
-Rename-Item .\build\Snippets.zip Snippets.keypirinha-package
+Rename-Item .\build\outlook_calendar.zip outlook_calendar.keypirinha-package
