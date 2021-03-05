@@ -12,8 +12,7 @@ jobs:
 
     steps:
       - name: "Build"
-        run: |
-          ./make.ps1
+        run: make.ps1
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
