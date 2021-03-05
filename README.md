@@ -1,3 +1,5 @@
+[![tagged-release](https://github.com/sharkoz/keypirinha-outlook_calendar/actions/workflows/main.yml/badge.svg)](https://github.com/sharkoz/keypirinha-outlook_calendar/actions/workflows/main.yml)
+
 # Keypirinha Plugin: outlook_calendar
 
 This is outlook_calendar, a plugin for the
