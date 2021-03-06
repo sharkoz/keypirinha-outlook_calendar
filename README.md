@@ -8,6 +8,10 @@ This is outlook_calendar, a plugin for the
 It allows you to view upcoming events in your outlook calendar,
 and to join a teams meeting if available 
 
+Are you tired of always looking for the link of your next teams meeting in outlook ?
+With this plugin, you can see from keypirinha your next outlook appointments for the day,
+and join your MS Teams meetings in just one keypress.
+
 
 ## Download
 
