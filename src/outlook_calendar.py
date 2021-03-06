@@ -59,6 +59,7 @@ class Outlook_cal(kp.Plugin):
 
     def __compose_suggestions(self, cal) -> []:
         status = {1:"Organizer", 2: "Tentative", 3: "Accepted", 4:"Declined", 5: "Pending"}
+        icons={1:"ok", 2:"maybe", 3:"ok", 4:"ko", 5:"maybe"}
         suggestions = []
         nb=0
         for app in cal:
@@ -69,13 +70,13 @@ class Outlook_cal(kp.Plugin):
             if srch:
                 link = srch.group()
                 desc += " - Press [Enter] to open in Teams"
-            new = self.__create_suggestion_item(str(app.start)[:-3] + "-" + str(app.end)[-8:-3] + "  " + app.subject + " - " + status.get(app.responseStatus, ""), desc, link)
+            new = self.__create_suggestion_item(icons.get(app.responseStatus, "maybe"),str(app.start)[:-3] + "-" + str(app.end)[-8:-3] + "  " + app.subject + " - " + status.get(app.responseStatus, ""), desc, link)
             suggestions.append(new)
             if nb>10:
                 break
         return suggestions  
 
-    def __create_suggestion_item(self, label: str, short_desc: str, target: str):
+    def __create_suggestion_item(self, icon, label: str, short_desc: str, target: str):
         return self.create_item(
             category=self.ITEMCAT,
             label=label,
@@ -83,6 +84,7 @@ class Outlook_cal(kp.Plugin):
             target=target,
             args_hint=kp.ItemArgsHint.FORBIDDEN,
             hit_hint=kp.ItemHitHint.IGNORE,
+            icon_handle=self.load_icon("res://"+self.package_full_name()+"/"+icon+".ico")
         )
 
     def __get_calendar(self,begin,end):
