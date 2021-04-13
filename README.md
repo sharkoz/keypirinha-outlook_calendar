@@ -53,8 +53,8 @@ You can configure these settings :
 
 
 ### v1.1
-Fix missing events
-Added configuration options
+* Fix missing events
+* Added configuration options
 
 ### v1.0
 
