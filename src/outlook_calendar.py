@@ -23,13 +23,13 @@ class Outlook_cal(kp.Plugin):
         self.info('init')
 
     def on_start(self):
-        pass
+        self._read_config()
 
     def on_catalog(self):
         self.set_catalog([
             self.create_item(
                 category=kp.ItemCategory.KEYWORD,
-                label="Calendar",
+                label=self.settings.get("label", "main", "Calendar", True),
                 short_desc="View upcoming Outlook meetings",
                 target="Calendar",
                 args_hint=kp.ItemArgsHint.REQUIRED,
@@ -41,12 +41,12 @@ class Outlook_cal(kp.Plugin):
         if not items_chain or items_chain[0].category() != kp.ItemCategory.KEYWORD:
             return
         date = datetime.now()
-        cal = self.__get_calendar(date,date+dt.timedelta(days=5))
-        suggestions = self.__compose_suggestions(cal)
+        cal = self.__get_calendar(date,date+dt.timedelta(days=int(self.settings.get("max_days", "main", 5, True))))
+        suggestions = self.__compose_suggestions(cal, user_input)
         self.set_suggestions(suggestions, kp.Match.ANY, kp.Sort.LABEL_ASC )
 
     def on_execute(self, item, action):
-        kpu.shell_execute("msteams"+item.target())
+        kpu.shell_execute("msteams"+item.data_bag())
 
     def on_activated(self):
         pass
@@ -55,36 +55,49 @@ class Outlook_cal(kp.Plugin):
         pass
 
     def on_events(self, flags):
-        pass
+        self.on_catalog()
 
-    def __compose_suggestions(self, cal) -> []:
+    def _read_config(self):
+        self.settings = self.load_settings() 
+        self.kpsettings = kp.settings()
+
+    def __compose_suggestions(self, cal, user_input) -> []:
         status = {1:"Organizer", 2: "Tentative", 3: "Accepted", 4:"Declined", 5: "Pending"}
         icons={1:"ok", 2:"maybe", 3:"ok", 4:"ko", 5:"maybe"}
         suggestions = []
         nb=0
         for app in cal:
-            nb = nb+1
-            link="None"
-            desc= app.location
-            srch = re.search(r"://teams.[\w\d:#@%/;$()~_?\+-=\\\.&]*",str(app.body))
-            if srch:
-                link = srch.group()
-                desc += " - Press [Enter] to open in Teams"
-            new = self.__create_suggestion_item(icons.get(app.responseStatus, "maybe"),str(app.start)[:-3] + "-" + str(app.end)[-8:-3] + "  " + app.subject + " - " + status.get(app.responseStatus, ""), desc, link)
-            suggestions.append(new)
-            if nb>10:
-                break
+            if len(user_input) < 1 or app.subject.lower().find(user_input.lower())>=0:
+                nb = nb+1
+                link="None"
+                desc= app.location
+                srch = re.search(r"://teams.[\w\d:#@%/;$()~_?\+-=\\\.&]*",str(app.body))
+                if srch:
+                    link = srch.group()
+                    desc += " - Press [Enter] to open in Teams"
+                new = self.__create_suggestion_item(
+                    nb,
+                    icons.get(app.responseStatus, "maybe"),
+                    str(app.start)[:-3] + "-" + str(app.end)[-8:-3] + "  " + app.subject + " - " + status.get(app.responseStatus, ""),
+                    desc,
+                    link)
+                suggestions.append(new)
+                if nb>=int(self.settings.get("max_results", "main", self.kpsettings.get("max_height", "gui", 10, True), True)):
+                    break
         return suggestions  
 
-    def __create_suggestion_item(self, icon, label: str, short_desc: str, target: str):
+    def __create_suggestion_item(self, id, icon, label: str, short_desc: str, link: str):
+        if self.should_terminate():
+            return
         return self.create_item(
             category=self.ITEMCAT,
             label=label,
             short_desc=short_desc,
-            target=target,
+            target=str(id),
             args_hint=kp.ItemArgsHint.FORBIDDEN,
             hit_hint=kp.ItemHitHint.IGNORE,
-            icon_handle=self.load_icon("res://"+self.package_full_name()+"/"+icon+".ico")
+            icon_handle=self.load_icon("res://"+self.package_full_name()+"/"+icon+".ico"),
+            data_bag=link
         )
 
     def __get_calendar(self,begin,end):
