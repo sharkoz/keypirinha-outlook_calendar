@@ -1,9 +1,11 @@
 name: "tagged-release"
 
-on:
-  push:
-    branches:
-      - "main"
+on: 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number, like : v1.0'     
+        required: true
 
 jobs:
   tagged-release:
@@ -19,7 +21,7 @@ jobs:
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
+          automatic_release_tag: "${{ github.event.inputs.version }}"
           prerelease: false
           files: |
             build/*
