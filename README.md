@@ -47,10 +47,14 @@ You can configure these settings :
 * label : The catalog entry name (if you want to type `ocal` instead of `Calendar` to invoke the plugin for example)
 * max_results : To limit the number of events returned
 * max_days : To limit the number of days in the future scanned for events
+* date_format : To change the date format for outlook's filter only, according to your locale. If you experience strange 
+behaviour on the dates you can try to change this
 
 
 ## Change Log
 
+### v1.2
+* Make date_format configurable to allow to adapt to the user's locale
 
 ### v1.1
 * Fix missing events

@@ -105,6 +105,7 @@ class Outlook_cal(kp.Plugin):
         calendar = outlook.getDefaultFolder(9).Items
         calendar.IncludeRecurrences = True
         calendar.Sort('[Start]')
-        restriction = "[END] >= '" + begin.strftime('%d/%m/%Y %H:%M') + "' AND [END] <= '" + end.strftime('%d/%m/%Y') + "'"
+        date_format = self.settings.get("date_format", "main", '%d-%m-%Y', True)
+        restriction = "[END] >= '" + begin.strftime(date_format+' %H:%M') + "' AND [END] <= '" + end.strftime(date_format) + "'"
         calendar = calendar.Restrict(restriction)
         return calendar
