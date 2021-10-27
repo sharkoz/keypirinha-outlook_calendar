@@ -1,5 +1,6 @@
 from datetime import datetime
 import datetime as dt
+from urllib.request import unquote
 
 import keypirinha as kp
 import keypirinha_util as kpu
@@ -71,10 +72,19 @@ class Outlook_cal(kp.Plugin):
                 nb = nb+1
                 link="None"
                 desc= app.location
-                srch = re.search(r"://teams.[\w\d:#@%/;$()~_?\+-=\\\.&]*",str(app.body))
+                body = str(app.body)
+                srch = re.search(r":\/\/teams.[\w\d:#@%\/;$()~_?\+-=\\\.&]*",body)
+                if not srch:
+                    for link in re.findall(r"safelinks\.protection\.outlook\.com[\S]*\?url=([^&]*)",body):
+                        srch = re.search(r":\/\/teams.[\w\d:#@%\/;$()~_?\+-=\\\.&]*",unquote(link))
+                        self.dbg('Safe link found: '+unquote(link))
+                        if srch:
+                            break
                 if srch:
                     link = srch.group()
                     desc += " - Press [Enter] to open in Teams"
+                else:
+                    self.dbg('No teams link found.')
                 new = self.__create_suggestion_item(
                     nb,
                     icons.get(app.responseStatus, "maybe"),
