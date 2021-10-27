@@ -39,7 +39,7 @@ class Outlook_cal(kp.Plugin):
         ])
 
     def on_suggest(self, user_input, items_chain):
-        if not items_chain or items_chain[0].category() != kp.ItemCategory.KEYWORD:
+        if not self.settings.get_bool("always_suggest", "main", False) and (not items_chain or items_chain[0].category() != kp.ItemCategory.KEYWORD):
             return
         date = datetime.now()
         cal = self.__get_calendar(date,date+dt.timedelta(days=int(self.settings.get("max_days", "main", 5, True))))
@@ -63,21 +63,27 @@ class Outlook_cal(kp.Plugin):
         self.kpsettings = kp.settings()
 
     def __compose_suggestions(self, cal, user_input) -> []:
+        # Label of outlook response status
         status = {1:"Organizer", 2: "Tentative", 3: "Accepted", 4:"Declined", 5: "Pending"}
-        icons={1:"ok", 2:"maybe", 3:"ok", 4:"ko", 5:"maybe"}
+        # Icon of outlook response status
+        icons={1:"organizer", 2:"maybe", 3:"ok", 4:"ko", 5:"maybe"}
         suggestions = []
         nb=0
         for app in cal:
-            if len(user_input) < 1 or app.subject.lower().find(user_input.lower())>=0:
+            # If no user input, display everything. Otherwise, lookup in the subject field
+            # Added the "space" condition to allow for quick display when always_suggest is true :
+            # In that last case, opening the window and only pressing "space" will display your next appointments
+            if len(user_input) < 1 or app.subject.lower().find(user_input.lower())>=0 or user_input==" ":
                 nb = nb+1
                 link="None"
                 desc= app.location
                 body = str(app.body)
+                # Check for MS teams link
                 srch = re.search(r":\/\/teams.[\w\d:#@%\/;$()~_?\+-=\\\.&]*",body)
+                # If not found, check a outlook safelink protected link
                 if not srch:
                     for link in re.findall(r"safelinks\.protection\.outlook\.com[\S]*\?url=([^&]*)",body):
                         srch = re.search(r":\/\/teams.[\w\d:#@%\/;$()~_?\+-=\\\.&]*",unquote(link))
-                        self.dbg('Safe link found: '+unquote(link))
                         if srch:
                             break
                 if srch:

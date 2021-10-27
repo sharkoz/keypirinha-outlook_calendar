@@ -39,6 +39,8 @@ Open Keypirinha and select the `Calendar` entry.
 View your upcoming events, and if they have a linked teams meeting, join the meeting
 by highlighting the event with the up/down arrows and pressing `Enter`
 
+If you enable the "always_suggest" option, you can even just open Keypirinha and 
+press space to display your events.
 
 ## Configuration
 
@@ -47,11 +49,17 @@ You can configure these settings :
 * label : The catalog entry name (if you want to type `ocal` instead of `Calendar` to invoke the plugin for example)
 * max_results : To limit the number of events returned
 * max_days : To limit the number of days in the future scanned for events
+* always_suggest : Set to 'yes' to add your events to the default results of Keypirinha without havint to first enter the 'label' keyword
 * date_format : To change the date format for outlook's filter only, according to your locale. If you experience strange 
 behaviour on the dates you can try to change this
 
 
 ## Change Log
+
+### v1.3
+* Option to add meetings to default suggestions 
+* Support ms teams links protected by outlook safelinks protection
+* Updated icons
 
 ### v1.2
 * Make date_format configurable to allow to adapt to the user's locale
